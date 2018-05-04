@@ -3,21 +3,19 @@
 use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Document;
-
 use Gregwar\RST\Nodes\ParagraphNode;
-use Gregwar\RST\Nodes\RawNode;
 use Gregwar\RST\Nodes\CodeNode;
 use Gregwar\RST\Nodes\QuoteNode;
 use Gregwar\RST\Nodes\TitleNode;
 use Gregwar\RST\Nodes\ListNode;
 use Gregwar\RST\Nodes\TableNode;
-use Gregwar\RST\Nodes\SeparatorNode;
 use Gregwar\RST\Nodes\DummyNode;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit testing for RST
  */
-class ParserTests extends \PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
     /**
      * Tests that comments are not present in the rendered document

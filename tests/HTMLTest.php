@@ -1,12 +1,12 @@
 <?php
 
 use Gregwar\RST\Parser;
-use Gregwar\RST\Document;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit testing for RST
  */
-class HTMLTests extends \PHPUnit_Framework_TestCase
+class HTMLTest extends TestCase
 {
     /**
      * Test some links demo

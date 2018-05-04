@@ -1,14 +1,12 @@
 <?php
 
-use Gregwar\RST\Parser;
-use Gregwar\RST\Document;
-
 use Gregwar\RST\Builder;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit testing for RST
  */
-class BuilderTests extends \PHPUnit_Framework_TestCase
+class BuilderTest extends TestCase
 {
     /**
      * Tests that the build produced the excepted documents
