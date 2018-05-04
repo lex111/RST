@@ -7,3 +7,6 @@ before_script: composer install
 
 script:
     - ./vendor/bin/phpunit --debug
+
+notifications:
+    email: false
