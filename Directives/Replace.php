@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Gregwar\RST\Directives;
 
 use Gregwar\RST\Nodes\Node;
-use Gregwar\RST\Span;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Directive;
 

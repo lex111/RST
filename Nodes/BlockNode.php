@@ -15,7 +15,7 @@ abstract class BlockNode extends Node
     {
         if (count($lines)) {
             $firstLine = $lines[0];
-            for ($k=0; $k<strlen($firstLine); $k++) {
+            for ($k = 0; $k < strlen($firstLine); $k++) {
                 if (trim($firstLine[$k])) {
                     break;
                 }

@@ -27,6 +27,8 @@ abstract class SubDirective extends Directive
      * @param string $variable
      * @param string $data
      * @param array $options
+     *
+     * @throws \Exception
      */
     public final function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {

@@ -14,7 +14,16 @@ abstract class TocNode extends Node
     protected $environment;
     /** @var array */
     protected $options;
+    /** @var int */
+    protected $depth;
 
+    /**
+     * TocNode constructor.
+     *
+     * @param array $files
+     * @param Environment $environment
+     * @param array $options
+     */
     public function __construct(array $files, Environment $environment, array $options)
     {
         $this->files = $files;

@@ -64,10 +64,10 @@ abstract class TableNode extends Node
             $this->data[] = [];
         } else {
             // Pushing data in the cells
-            list($header, $pretty, $parts) = $this->parts;
+            [, $pretty, $parts] = $this->parts;
             $row = &$this->data[count($this->data)-1];
 
-            for ($k=1; $k<=count($parts); $k++) {
+            for ($k = 1; $k <= count($parts); $k++) {
                 if ($k == count($parts)) {
                     $data = substr($line, $parts[$k-1]);
                 } else {

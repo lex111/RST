@@ -31,7 +31,7 @@ class Kernel extends Base
             new Directives\Title,
             new Directives\Url,
             new Directives\Div,
-            new Directives\Wrap('note')
+            new Directives\Wrap('note'),
         ]);
 
         return $directives;

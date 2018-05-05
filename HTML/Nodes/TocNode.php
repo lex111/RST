@@ -26,12 +26,12 @@ class TocNode extends Base
         $html = '';
         foreach ($titles as $k => $entry) {
             $path[$level-1] = $k+1;
-            list($title, $childs) = $entry;
+            [$title, $childs] = $entry;
             $token = 'title.'.implode('.', $path);
             $target = $url.'#'.$token;
 
             if (is_array($title)) {
-                list($title, $target) = $title;
+                [$title, $target] = $title;
                 $info = $this->environment->resolve('doc', $target);
                 $target = $this->environment->relativeUrl($info['url']);
             }

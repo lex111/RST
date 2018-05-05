@@ -20,7 +20,7 @@ abstract class Node
     }
 
     /**
-     * @return mixed|null
+     * @return mixed|string|null
      */
     public function getValue()
     {

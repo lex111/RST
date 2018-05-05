@@ -8,8 +8,6 @@ use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Directive;
 
-use Gregwar\RST\Nodes\RawNode;
-
 /**
  * Adds a stylesheet to a document, example:
  *

@@ -182,7 +182,7 @@ class Builder
      *
      * @param string $file
      */
-    protected function addToParseQueue(string $file)
+    protected function addToParseQueue(string $file): void
     {
         $this->states[$file] = self::PARSE;
 
@@ -273,7 +273,7 @@ class Builder
      *
      * @param string $file
      */
-    public function scan(string $file)
+    public function scan(string $file): void
     {
         // If no decision is already made about this file
         if (!isset($this->states[$file])) {

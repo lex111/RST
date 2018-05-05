@@ -269,11 +269,7 @@ class Environment
      */
     public function getVariable(string $variable, $default = null)
     {
-        if (isset($this->variables[$variable])) {
-            return $this->variables[$variable];
-        }
-
-        return $default;
+        return $this->variables[$variable] ?? $default;
     }
 
     /**
@@ -419,7 +415,7 @@ class Environment
      */
     public function getDepth(): int
     {
-        return count(explode('/', $this->currentFileName))-1;
+        return count(explode('/', $this->currentFileName)) - 1;
     }
 
     /**

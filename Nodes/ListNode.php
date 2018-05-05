@@ -19,7 +19,7 @@ abstract class ListNode extends Node
      *
      * @param array $line
      */
-    public function addLine(array $line)
+    public function addLine(array $line): void
     {
         $this->lines[] = $line;
     }
@@ -58,7 +58,7 @@ abstract class ListNode extends Node
         }
 
         while ($stack) {
-            list($d, $closing) = array_pop($stack);
+            [, $closing] = array_pop($stack);
             $value .= $closing; 
         }
 

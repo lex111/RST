@@ -9,6 +9,7 @@ use Gregwar\RST\Environment;
 
 class Doc extends Reference
 {
+    /** @var string */
     protected $name;
 
     public function __construct($name = 'doc')

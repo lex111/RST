@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Gregwar\RST\HTML;
 
 use Gregwar\RST\Document as Base;
-
 use Gregwar\RST\Nodes\RawNode;
 
 class Document extends Base

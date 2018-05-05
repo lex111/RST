@@ -7,7 +7,6 @@ namespace Gregwar\RST\HTML\Directives;
 use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 use Gregwar\RST\SubDirective;
-
 use Gregwar\RST\HTML\Nodes\ImageNode;
 use Gregwar\RST\HTML\Nodes\FigureNode;
 

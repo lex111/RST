@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Gregwar\RST;
 
-use Gregwar\RST\Builder;
-use Gregwar\RST\Document;
-
 abstract class Kernel
 {
     /**
@@ -21,7 +18,7 @@ abstract class Kernel
      *
      * @return string
      */
-    public function getClass(string $name)
+    public function getClass(string $name): string
     {
         return 'Gregwar\RST\\'.$this->getName().'\\'.$name;
     }

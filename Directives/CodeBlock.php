@@ -30,8 +30,6 @@ class CodeBlock extends Directive
     public function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {
         if ($node) {
-            $kernel = $parser->getKernel();
-
             if ($node instanceof CodeNode) {
                 $node->setLanguage(trim($data));
             }
