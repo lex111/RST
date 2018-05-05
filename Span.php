@@ -1,16 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 use Gregwar\RST\Nodes\Node;
 
 abstract class Span extends Node
 {
+    /** @var Parser */
     protected $parser;
+    /** @var string|array */
     protected $span;
+    /** @var array */
     protected $tokens;
+    /** @var Environment */
     protected $environment;
 
+    /**
+     * Span constructor.
+     *
+     * @param Parser $parser
+     * @param string|array $span
+     */
     public function __construct(Parser $parser, $span)
     {
         if (is_array($span)) {
@@ -122,8 +134,12 @@ abstract class Span extends Node
     /**
      * Processes some data in the context of the span, this will process the
      * **emphasis**, the nbsp, replace variables and end-of-line brs
+     *
+     * @param string $data
+     *
+     * @return string
      */
-    public function process($data)
+    public function process(string $data)
     {
         $self = $this;
         $environment = $this->parser->getEnvironment();
@@ -155,7 +171,7 @@ abstract class Span extends Node
     /**
      * Renders the span
      */
-    public function render()
+    public function render(): string
     {
         $environment = $this->parser->getEnvironment();
         $span = $this->process($this->span);
@@ -191,45 +207,87 @@ abstract class Span extends Node
         return $span;
     }
 
-    public function emphasis($text)
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function emphasis(string $text): string
     {
         return $text;
     }
 
-    public function strongEmphasis($text)
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function strongEmphasis(string $text): string
     {
         return $text;
     }
 
-    public function nbsp()
+    /**
+     * @return string
+     */
+    public function nbsp(): string
     {
         return ' ';
     }
 
-    public function br()
+    /**
+     * @return string
+     */
+    public function br(): string
     {
         return "\n";
     }
 
-    public function literal($text)
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function literal(string $text): string
     {
         return $text;
     }
 
-    public function link($url, $title)
+    /**
+     * @param string $url
+     * @param string $title
+     *
+     * @return string
+     */
+    public function link(string $url, string $title): string
     {
         return $title.' ('.$url.')';
     }
 
-    public function escape($span)
+    /**
+     * @param string $span
+     *
+     * @return string
+     */
+    public function escape(string $span): string
     {
         return $span;
     }
 
-    public function reference($reference, $value)
+    /**
+     * @param array $reference
+     * @param array $value
+     *
+     * @return string
+     */
+    public function reference(array $reference, array $value): string
     {
         if ($reference) {
             $text = $value['text'] ?: (isset($reference['title']) ? $reference['title'] : '');
+            $url = $reference['url'];
+            if ($value['anchor']) {
+                $url .= '#' . $value['anchor'];
+            }
             $link = $this->link($url, trim($text));
         } else {
             $link = $this->link('#', '(unresolved reference)');

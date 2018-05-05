@@ -6,7 +6,10 @@ use Gregwar\RST\Nodes\Node as Base;
 
 class DocumentNode extends Base
 {
-    public function render()
+    /**
+     * @return string
+     */
+    public function render(): string
     {
         return '';
     }

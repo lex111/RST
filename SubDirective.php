@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 use Gregwar\RST\Nodes\CodeNode;
+use Gregwar\RST\Nodes\Node;
 
 /**
  * A directive that parses the sub block and call the processSub that can 
@@ -18,8 +21,14 @@ abstract class SubDirective extends Directive
 {
     /**
      * Process a directive that should parces the next node as a "sub" document
+     *
+     * @param Parser $parser
+     * @param Node $node
+     * @param string $variable
+     * @param string $data
+     * @param array $options
      */
-    public final function process(Parser $parser, $node, $variable, $data, array $options)
+    public final function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {
         $subParser = $parser->getSubParser();
 
@@ -42,13 +51,21 @@ abstract class SubDirective extends Directive
 
     /**
      * Process a sub directive
+     *
+     * @param Parser $parser
+     * @param Node $document
+     * @param string $variable
+     * @param string $data
+     * @param array $options
+     *
+     * @return null
      */
-    public function processSub(Parser $parser, $document, $variable, $data, array $options)
+    public function processSub(Parser $parser, ?Node $document, string $variable, string $data, array $options)
     {
         return null;
     }
 
-    public function wantCode()
+    public function wantCode(): bool
     {
         return true;
     }

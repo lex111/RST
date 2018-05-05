@@ -2,6 +2,8 @@
 
 namespace Gregwar\RST;
 
+use Gregwar\RST\HTML\Document;
+
 class Parser
 {
     const STATE_BEGIN = 0;
@@ -608,7 +610,7 @@ class Parser
      *
      * @return Document the document
      */
-    public function getDocument()
+    public function getDocument(): Document
     {
         return $this->document;
     }
@@ -889,7 +891,7 @@ class Parser
     /**
      * Create a span, which is a text with inline style
      *
-     * @param $span the content string
+     * @param string|array  $span the content string
      * @return Span a span object
      */
     public function createSpan($span)

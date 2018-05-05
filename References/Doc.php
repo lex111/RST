@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\References;
 
 use Gregwar\RST\Reference;
@@ -14,12 +16,12 @@ class Doc extends Reference
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function resolve(Environment $environment, $data)
+    public function resolve(Environment $environment, string $data): array
     {
         $metas = $environment->getMetas();
         $file = $environment->canonicalUrl($data);
@@ -37,7 +39,7 @@ class Doc extends Reference
         return $entry;
     }
 
-    public function found(Environment $environment, $data)
+    public function found(Environment $environment, string $data): void
     {
         $environment->addDependency($data);
     }

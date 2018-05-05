@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Directives;
 
+use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Directive;
 
@@ -17,12 +20,22 @@ use Gregwar\RST\Nodes\CodeNode;
  */
 class Raw extends Directive
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'raw';
     }
 
-    public function process(Parser $parser, $node, $variable, $data, array $options)
+    /**
+     * @param Parser $parser
+     * @param Node $node
+     * @param string $variable
+     * @param string $data
+     * @param array $options
+     */
+    public function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {
         if ($node) {
             $kernel = $parser->getKernel();
@@ -41,7 +54,10 @@ class Raw extends Directive
         }
     }
 
-    public function wantCode()
+    /**
+     * @return bool
+     */
+    public function wantCode(): bool
     {
         return true;
     }

@@ -1,15 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML\Nodes;
 
 use Gregwar\RST\Nodes\TocNode as Base;
 
 class TocNode extends Base
 {
-    protected function renderLevel($url, $titles, $level = 1, $path = array())
+    /**
+     * @param string $url
+     * @param array $titles
+     * @param int $level
+     * @param array $path
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function renderLevel(string $url, array $titles, int $level = 1, array $path = array()): ?string
     {
         if ($level > $this->depth) {
-            return false;
+            return null;
         }
 
         $html = '';
@@ -37,7 +48,11 @@ class TocNode extends Base
         return $html;
     }
 
-    public function render()
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function render(): string
     {
         if (isset($this->options['hidden'])) {
             return '';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 use Gregwar\RST\Nodes\Node;
@@ -9,21 +11,35 @@ use Gregwar\RST\Nodes\RawNode;
 
 abstract class Document extends Node
 {
+    /** @var Environment */
     protected $environment;
+    /** @var array */
     protected $headerNodes = array();
+    /** @var Node[] */
     protected $nodes = array();
 
+    /**
+     * Document constructor.
+     *
+     * @param Environment $environment
+     */
     public function __construct(Environment $environment)
     {
         $this->environment = $environment;
     }
 
-    public function getEnvironment()
+    /**
+     * @return Environment
+     */
+    public function getEnvironment(): Environment
     {
         return $this->environment;
     }
 
-    public function renderDocument()
+    /**
+     * @return string
+     */
+    public function renderDocument(): string
     {
         return $this->render();
     }
@@ -31,8 +47,12 @@ abstract class Document extends Node
     /**
      * Getting all nodes of the document that satisfies the given
      * function. If the function is null, all the nodes are returned.
+     *
+     * @param callable|null $function
+     *
+     * @return Node[]
      */
-    public function getNodes($function = null)
+    public function getNodes(callable $function = null): array
     {
         $nodes = array();
 
@@ -52,7 +72,7 @@ abstract class Document extends Node
     /**
      * Gets the main title of the document
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         foreach ($this->nodes as $node) {
             if ($node instanceof TitleNode && $node->getLevel() == 1) {
@@ -66,7 +86,7 @@ abstract class Document extends Node
     /**
      * Get the table of contents of the document
      */
-    public function getTocs()
+    public function getTocs(): array
     {
         $tocs = array();
 
@@ -74,6 +94,7 @@ abstract class Document extends Node
             return $node instanceof TocNode;
         });
 
+        /** @var TocNode $toc */
         foreach ($nodes as $toc) {
             $files = $toc->getFiles();
 
@@ -98,7 +119,7 @@ abstract class Document extends Node
      *     )
      * )
      */
-    public function getTitles()
+    public function getTitles(): array
     {
         $titles = array();
         $levels = array(&$titles);
@@ -122,7 +143,10 @@ abstract class Document extends Node
         return $titles;
     }
 
-    public function addNode($node)
+    /**
+     * @param Node|string $node
+     */
+    public function addNode($node): void
     {
         if (is_string($node)) {
             $node = new RawNode($node);
@@ -135,17 +159,26 @@ abstract class Document extends Node
         $this->nodes[] = $node;
     }
 
-    public function prependNode(Node $node)
+    /**
+     * @param Node $node
+     */
+    public function prependNode(Node $node): void
     {
         array_unshift($this->nodes, $node);
     }
 
-    public function addHeaderNode(Node $node)
+    /**
+     * @param Node $node
+     */
+    public function addHeaderNode(Node $node): void
     {
         $this->headerNodes[] = $node;
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
         return $this->render();
     }

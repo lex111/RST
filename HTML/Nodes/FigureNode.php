@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML\Nodes;
 
 use Gregwar\RST\Nodes\FigureNode as Base;
 
 class FigureNode extends Base
 {
-    public function render()
+    /**
+     * @return string
+     */
+    public function render(): string
     {
         $html = '<figure>';
         $html .= $this->image->render();

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Directives;
 
+use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Span;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Directive;
@@ -13,12 +16,23 @@ use Gregwar\RST\Directive;
  */
 class Replace extends Directive
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'replace';
     }
 
-    public function processNode(Parser $parser, $variable, $data, array $options)
+    /**
+     * @param Parser $parser
+     * @param string $variable
+     * @param string|array $data
+     * @param array $options
+     *
+     * @return Node
+     */
+    public function processNode(Parser $parser, string $variable, $data, array $options): Node
     {
         return $parser->createSpan($data);
     }

@@ -1,58 +1,74 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
+
+use Gregwar\RST\Nodes\Node;
 
 class Environment
 {
-    /**
-     * Letters used as separators for titles and horizontal line
-     */
+    /** @var array Letters used as separators for titles and horizontal line */
     public static $letters = array('=', '-', '~', '*', '^', '"');
 
-    // Error manager
+    /** @var ErrorManager|null */
     public $errorManager = null;
 
     // Table letters
+    /** @var string */
     public static $tableLetter = '=';
+    /** @var string */
     public static $prettyTableLetter = '-';
+    /** @var string */
     public static $prettyTableHeader = '=';
+    /** @var string */
     public static $prettyTableJoint = '+';
 
     // Title letter for each levels
+    /** @var int */
     protected $currentTitleLevel = 0;
+    /** @var array */
     protected $titleLetters = array();
 
     // Current file name
-    protected $currentFileName = null;
+    /** @var string */
+    protected $currentFileName = '';
+    /** @var string */
     protected $currentDirectory = '.';
+    /** @var string */
     protected $targetDirectory = '.';
+    /** @var string|null */
     protected $url = null;
 
-    // References that can be resolved
+    /** @var array References that can be resolved */
     protected $references = array();
 
-    // Metas
+    /** @var Metas|null */
     protected $metas = null;
 
-    // Dependencies of this document
+    /** @var array Dependencies of this document */
     protected $dependencies = array();
 
-    // Variables of the document
+    /** @var array Variables of the document */
     protected $variables = array();
 
-    // Links
+    /** @var array Links */
     protected $links = array();
 
-    // Level counters
+    /** @var array Level counters */
     protected $levels = array();
+    /** @var array */
     protected $counters = array();
 
-    // Enable relative URLs
+    /** @var bool Enable relative URLs */
     protected $relativeUrls = true;
 
-    // Anonymous links stack
+    /** @var array Anonymous links stack */
     protected $anonymous = array();
 
+    /**
+     * Environment constructor.
+     */
     public function __construct()
     {
         $this->errorManager = new ErrorManager;
@@ -63,20 +79,20 @@ class Environment
     /**
      * Puts the environment in a clean state for a new parse, like title level order.
      */
-    public function reset()
+    public function reset(): void
     {
         $this->titleLetters = array();
         $this->currentTitleLevel = 0;
         $this->levels = array();
         $this->counters = array();
 
-        for ($level=0; $level<16; $level++) {
+        for ($level = 0; $level < 16; $level++) {
             $this->levels[$level] = 1;
             $this->counters[$level] = 0;
         }
     }
 
-    public function getErrorManager()
+    public function getErrorManager(): ErrorManager
     {
         return $this->errorManager;
     }
@@ -86,7 +102,7 @@ class Environment
         $this->errorManager = $errorManager;
     }
 
-    public function setMetas($metas)
+    public function setMetas(Metas $metas): void
     {
         $this->metas = $metas;
     }
@@ -94,7 +110,7 @@ class Environment
     /**
      * Get my parent metas
      */
-    public function getParent()
+    public function getParent(): ?array
     {
         if (!$this->currentFileName || !$this->metas) {
             return null;
@@ -118,7 +134,7 @@ class Environment
     /**
      * Get the docs involving this document
      */
-    public function getMyToc()
+    public function getMyToc(): ?array
     {
         $parent = $this->getParent();
 
@@ -144,8 +160,10 @@ class Environment
 
     /**
      * Registers a new reference
+     *
+     * @param Reference $reference
      */
-    public function registerReference(Reference $reference)
+    public function registerReference(Reference $reference): void
     {
         $name = $reference->getName();
         $this->references[$name] = $reference;
@@ -153,8 +171,14 @@ class Environment
 
     /**
      * Resolves a reference
+     *
+     * @param string $section
+     * @param string $data
+     *
+     * @return mixed
+     * @throws \Exception
      */
-    public function resolve($section, $data)
+    public function resolve(string $section, string $data)
     {
         if (isset($this->references[$section])) {
             $reference = $this->references[$section];
@@ -165,12 +189,21 @@ class Environment
         $this->errorManager->error('Unknown reference section '.$section);
     }
 
-    public function found($section, $data)
+    /**
+     * @param string $section
+     * @param string $data
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function found(string $section, string $data): void
     {
         if (isset($this->references[$section])) {
+            /** @var Reference $reference */
             $reference = $this->references[$section];
 
-            return $reference->found($this, $data);
+            $reference->found($this, $data);
+            return;
         }
 
         $this->errorManager->error('Unknown reference section '.$section);
@@ -179,20 +212,24 @@ class Environment
     /**
      * Sets the giving variable to a value
      *
-     * @param $variable the variable name
-     * @param $value the variable value
+     * @param string$variable the variable name
+     * @param Node $value the variable value
      */
-    public function setVariable($variable, $value)
+    public function setVariable(string $variable, Node $value)
     {
         $this->variables[$variable] = $value;
     }
 
     /**
      * Title level
+     *
+     * @param int $level
+     *
+     * @return string
      */
-    public function createTitle($level)
+    public function createTitle(int $level)
     {
-        for ($currentLevel=0; $currentLevel<16; $currentLevel++) {
+        for ($currentLevel = 0; $currentLevel < 16; $currentLevel++) {
             if ($currentLevel > $level) {
                 $this->levels[$currentLevel] = 1;
                 $this->counters[$currentLevel] = 0;
@@ -203,7 +240,7 @@ class Environment
         $this->counters[$level]++;
         $token = array('title');
 
-        for ($i=1; $i<=$level; $i++) {
+        for ($i = 1; $i <= $level; $i++) {
             $token[] = $this->counters[$i];
         }
 
@@ -212,8 +249,12 @@ class Environment
 
     /**
      * Get a level number
+     *
+     * @param int $level
+     *
+     * @return int
      */
-    public function getNumber($level)
+    public function getNumber(int $level)
     {
         return $this->levels[$level]++;
     }
@@ -221,9 +262,12 @@ class Environment
     /**
      * Gets the variable value
      *
-     * @param $name the variable name
+     * @param string $variable
+     * @param null $default
+     *
+     * @return mixed|null
      */
-    public function getVariable($variable, $default = null)
+    public function getVariable(string $variable, $default = null)
     {
         if (isset($this->variables[$variable])) {
             return $this->variables[$variable];
@@ -234,8 +278,11 @@ class Environment
 
     /**
      * Set the link url
+     *
+     * @param string $name
+     * @param string $url
      */
-    public function setLink($name, $url)
+    public function setLink(string $name, string $url): void
     {
         $name = trim(strtolower($name));
 
@@ -249,23 +296,30 @@ class Environment
     /**
      * Resets the anonymous stack
      */
-    public function resetAnonymousStack()
+    public function resetAnonymousStack(): void
     {
         $this->anonymous = array();
     }
 
     /**
      * Set the current anonymous links name
+     *
+     * @param string $name
      */
-    public function pushAnonymous($name)
+    public function pushAnonymous(string $name): void
     {
         $this->anonymous[] = trim(strtolower($name));
     }
 
     /**
      * Get a link value
+     *
+     * @param string $name
+     * @param bool $relative
+     *
+     * @return string|null
      */
-    public function getLink($name, $relative = true)
+    public function getLink(string $name, bool $relative = true)
     {
         $name = trim(strtolower($name));
         if (isset($this->links[$name])) {
@@ -283,8 +337,10 @@ class Environment
 
     /**
      * Adds a dependency to the document
+     *
+     * @param string $dependency
      */
-    public function addDependency($dependency)
+    public function addDependency(string $dependency)
     {
         $dependency = $this->canonicalUrl($dependency);
         $this->dependencies[] = $dependency;
@@ -293,7 +349,7 @@ class Environment
     /**
      * Getting all the dependencies for this environment
      */
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return $this->dependencies;
     }
@@ -303,8 +359,12 @@ class Environment
      * current directory is "path/to/something", and you want to get the
      * relative URL to "path/to/something/else.html", the result will
      * be else.html. Else, "../" will be added to go to the upper directory
+     *
+     * @param string $url
+     *
+     * @return string
      */
-    public function relativeUrl($url)
+    public function relativeUrl(string $url): string
     {
         // If string contains ://, it is considered as absolute
         if (preg_match('/:\\/\\//mUsi', $url)) {
@@ -322,7 +382,7 @@ class Environment
                 // Else, returns enough ../ to get upper
                 $relative = '';
 
-                for ($k=0; $k<$this->getDepth(); $k++) {
+                for ($k = 0; $k < $this->getDepth(); $k++) {
                     $relative .= '../';
                 }
 
@@ -338,15 +398,17 @@ class Environment
     /**
      * Use relative URLs for links
      */
-    public function useRelativeUrls()
+    public function useRelativeUrls(): bool
     {
         return $this->relativeUrls;
     }
 
     /**
      * Use relative URLs for links
+     *
+     * @param bool $enable
      */
-    public function setUseRelativeUrls($enable)
+    public function setUseRelativeUrls(bool $enable): void
     {
         $this->relativeUrls = $enable;
     }
@@ -355,7 +417,7 @@ class Environment
      * Get the depth of the current file name (the number of parent
      * directories)
      */
-    public function getDepth()
+    public function getDepth(): int
     {
         return count(explode('/', $this->currentFileName))-1;
     }
@@ -363,8 +425,12 @@ class Environment
     /**
      * Returns true if the given url have the same prefix as the
      * current document
+     *
+     * @param string $url
+     *
+     * @return bool
      */
-    protected function samePrefix($url)
+    protected function samePrefix(string $url)
     {
         $partsA = explode('/', $url);
         $partsB = explode('/', $this->currentFileName);
@@ -383,7 +449,7 @@ class Environment
     /**
      * Returns the directory name
      */
-    public function getDirName()
+    public function getDirName(): string
     {
         $dirname = dirname($this->currentFileName);
 
@@ -397,8 +463,12 @@ class Environment
     /**
      * Canonicalize a path, a/b/c/../d/e will become
      * a/b/d/e
+     *
+     * @param string $url
+     *
+     * @return string
      */
-    protected function canonicalize($url)
+    protected function canonicalize(string $url): string
     {
         $parts = explode('/', $url);
         $stack = array();
@@ -416,8 +486,12 @@ class Environment
 
     /**
      * Gets a canonical URL from the given one
+     *
+     * @param string $url
+     *
+     * @return string
      */
-    public function canonicalUrl($url)
+    public function canonicalUrl(string $url): ?string
     {
         if (strlen($url)) {
             if ($url[0] == '/') {
@@ -439,39 +513,50 @@ class Environment
 
     /**
      * Sets the current file name
+     *
+     * @param string $filename
      */
-    public function setCurrentFileName($filename)
+    public function setCurrentFileName(string $filename): void
     {
         $this->currentFileName = $filename;
     }
 
     /**
      * Sets the directory of the current parsing
+     *
+     * @param string $directory
      */
-    public function setCurrentDirectory($directory)
+    public function setCurrentDirectory(string $directory): void
     {
         $this->currentDirectory = $directory;
     }
 
     /**
      * Returns an absolute path for a relative given URL
+     *
+     * @param string $url
+     *
+     * @return string
      */
-    public function absoluteRelativePath($url)
+    public function absoluteRelativePath(string $url): string
     {
         return $this->currentDirectory . '/' . $this->getDirName() . '/' . $this->relativeUrl($url);
     }
 
-    public function setTargetDirectory($directory)
+    /**
+     * @param string $directory
+     */
+    public function setTargetDirectory(string $directory): void
     {
         $this->targetDirectory = $directory;
     }
 
-    public function getTargetDirectory()
+    public function getTargetDirectory(): string
     {
         return $this->targetDirectory;
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         if ($this->url) {
             return $this->url;
@@ -480,7 +565,10 @@ class Environment
         }
     }
 
-    public function setUrl($url)
+    /**
+     * @param string $url
+     */
+    public function setUrl(string $url): void
     {
         if ($this->getDirName()) {
             $url = $this->getDirName() . '/' . $url;
@@ -489,12 +577,12 @@ class Environment
         $this->url = $url;
     }
 
-    public function getMetas()
+    public function getMetas(): ?Metas
     {
         return $this->metas;
     }
 
-    public function getLevel($letter)
+    public function getLevel($letter): int
     {
         foreach ($this->titleLetters as $level => $titleLetter) {
             if ($letter == $titleLetter) {
@@ -504,10 +592,11 @@ class Environment
 
         $this->currentTitleLevel++;
         $this->titleLetters[$this->currentTitleLevel] = $letter;
+
         return $this->currentTitleLevel;
     }
 
-    public function getTitleLetters()
+    public function getTitleLetters(): array
     {
         return $this->titleLetters;
     }

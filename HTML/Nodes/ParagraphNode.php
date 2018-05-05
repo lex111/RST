@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML\Nodes;
 
 use Gregwar\RST\Nodes\ParagraphNode as Base;
 
 class ParagraphNode extends Base
 {
-    public function render()
+    /**
+     * @return string
+     */
+    public function render(): string
     {
-        $text = $this->value;
+        $text = (string) $this->value;
 
         if (trim($text)) {
             return '<p>'.$text.'</p>';

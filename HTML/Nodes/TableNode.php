@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML\Nodes;
 
 use Gregwar\RST\Nodes\TableNode as Base;
 
 class TableNode extends Base
 {
-    public function render()
+    /**
+     * @return string
+     */
+    public function render(): string
     {
         $html = '<table>';
         foreach ($this->data as $k=>&$row) {

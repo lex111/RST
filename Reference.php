@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 /**
@@ -15,25 +17,23 @@ abstract class Reference
     /**
      * The name of the reference, i.e the :something:
      */
-    abstract public function getName();
+    abstract public function getName(): string;
 
     /**
      * Resolve the reference and returns an array
      *
-     * @param $environment the Environment in use
-     * @param $data the data of the reference
+     * @param Environment $environment the Environment in use
+     * @param string $data the data of the reference
      *
      * @return array an array with key title and url
      */
-    abstract public function resolve(Environment $environment, $data);
+    abstract public function resolve(Environment $environment, string $data): array;
 
     /**
      * Called when a reference is just found
      *
-     * @param $environment the Environment in use
-     * @param $data the data of the reference
+     * @param Environment $environment the Environment in use
+     * @param string $data the data of the reference
      */
-    public function found(Environment $environment, $data)
-    {
-    }
+    public function found(Environment $environment, string $data): void {}
 }

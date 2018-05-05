@@ -1,47 +1,87 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML;
 
 use Gregwar\RST\Span as Base;
 
 class Span extends Base
 {
-    public function emphasis($text)
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function emphasis(string $text): string
     {
         return '<em>'.$text.'</em>';
     }
 
-    public function strongEmphasis($text)
+    /**
+     * @param $text
+     *
+     * @return string
+     */
+    public function strongEmphasis($text): string
     {
         return '<strong>'.$text.'</strong>';
     }
 
-    public function nbsp()
+    /**
+     * @return string
+     */
+    public function nbsp(): string
     {
         return '&nbsp;';
     }
 
-    public function br()
+    /**
+     * @return string
+     */
+    public function br(): string
     {
         return '<br />';
     }
 
-    public function literal($text)
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    public function literal(string $text): string
     {
         return '<code>'.$text.'</code>';
     }
 
-    public function link($url, $title)
+    /**
+     * @param string $url
+     * @param string $title
+     *
+     * @return string
+     */
+    public function link(string $url, string $title): string
     {
         return '<a href="'.htmlspecialchars($url).'">'.$title.'</a>';
     }
 
-    public function escape($span)
+    /**
+     * @param string $span
+     *
+     * @return string
+     */
+    public function escape(string $span): string
     {
         return htmlspecialchars($span);
     }
 
-    public function reference($reference, $value)
+    /**
+     * @param array $reference
+     * @param array $value
+     *
+     * @return string
+     */
+    public function reference(array $reference, array $value): string
     {
         if ($reference) {
             $text = $value['text'] ?: (isset($reference['title']) ? $reference['title'] : '');

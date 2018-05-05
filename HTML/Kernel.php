@@ -1,17 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML;
 
 use Gregwar\RST\Kernel as Base;
 
 class Kernel extends Base
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'HTML';
     }
 
-    public function getDirectives()
+    /**
+     * @return array
+     */
+    public function getDirectives(): array
     {
         $directives = parent::getDirectives();
 
@@ -29,7 +37,10 @@ class Kernel extends Base
         return $directives;
     }
 
-    public function getFileExtension()
+    /**
+     * @return string
+     */
+    public function getFileExtension(): string
     {
         return 'html';
     }

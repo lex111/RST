@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Directives;
 
+use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Nodes\TitleNode;
 use Gregwar\RST\Span;
 use Gregwar\RST\Parser;
@@ -13,12 +16,22 @@ use Gregwar\RST\Directive;
  */
 class RedirectionTitle extends Directive
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'redirection-title';
     }
 
-    public function process(Parser $parser, $node, $variable, $data, array $options)
+    /**
+     * @param Parser $parser
+     * @param Node $node
+     * @param string $variable
+     * @param string $data
+     * @param array $options
+     */
+    public function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {
         $document = $parser->getDocument();
 

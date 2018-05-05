@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\HTML\Directives;
 
+use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 use Gregwar\RST\Directive;
 
@@ -17,12 +20,23 @@ use Gregwar\RST\HTML\Nodes\ImageNode;
  */
 class Image extends Directive
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'image';
     }
 
-    public function processNode(Parser $parser, $variable, $data, array $options)
+    /**
+     * @param Parser $parser
+     * @param string $variable
+     * @param string $data
+     * @param array $options
+     *
+     * @return ImageNode
+     */
+    public function processNode(Parser $parser, $variable, $data, array $options): Node
     {
         $environment = $parser->getEnvironment();
         $url = $environment->relativeUrl($data);

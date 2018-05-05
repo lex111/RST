@@ -3,16 +3,27 @@
 namespace Gregwar\RST\Directives;
 
 use Gregwar\RST\Directive;
+use Gregwar\RST\Nodes\Node;
 use Gregwar\RST\Parser;
 
 class Toctree extends Directive
 {
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return 'toctree';
     }
 
-    public function process(Parser $parser, $node, $variable, $data, array $options)
+    /**
+     * @param Parser $parser
+     * @param Node $node
+     * @param string $variable
+     * @param string $data
+     * @param array $options
+     */
+    public function process(Parser $parser, ?Node $node, string $variable, string $data, array $options): void
     {
         $environment = $parser->getEnvironment();
         $kernel = $parser->getKernel();
@@ -30,7 +41,10 @@ class Toctree extends Directive
         $document->addNode($kernel->build('Nodes\TocNode', $files, $environment, $options));
     }
 
-    public function wantCode()
+    /**
+     * @return bool
+     */
+    public function wantCode(): bool
     {
         return true;
     }

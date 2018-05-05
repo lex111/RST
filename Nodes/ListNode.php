@@ -1,25 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Nodes;
 
 abstract class ListNode extends Node
 {
+    /** @var array */
     protected $lines = array();
 
     /**
      * Infos contains:
-     * 
+     *
      * - text: the line text
      * - depth: the depth in the list level
      * - prefix: the prefix char (*, - etc.)
      * - ordered: true of false if the list is ordered
+     *
+     * @param array $line
      */
     public function addLine(array $line)
     {
         $this->lines[] = $line;
     }
 
-    public function render()
+    public function render(): string
     {
         $depth = -1;
         $value = '';
@@ -49,7 +54,7 @@ abstract class ListNode extends Node
                 }
             }
 
-            $value .= $this->createElement($text, $prefix)."\n";
+            $value .= $this->createElement((string) $text, $prefix)."\n";
         }
 
         while ($stack) {
@@ -60,6 +65,18 @@ abstract class ListNode extends Node
         return $value;
     }
 
-    abstract protected function createElement($text, $prefix);
-    abstract protected function createList($ordered);
+    /**
+     * @param string $text
+     * @param string $prefix
+     *
+     * @return string
+     */
+    abstract protected function createElement(string $text, string $prefix): string;
+
+    /**
+     * @param bool $ordered
+     *
+     * @return string
+     */
+    abstract protected function createList(bool $ordered): array;
 }

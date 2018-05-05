@@ -1,16 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Nodes;
 
 use Gregwar\RST\Parser;
 
 abstract class TableNode extends Node
 {
+    /** @var array */
     protected $parts;
+    /** @var array */
     protected $data = array();
+    /** @var array */
     protected $headers = array();
 
-    public function __construct($parts)
+    /**
+     * TableNode constructor.
+     *
+     * @param array $parts
+     */
+    public function __construct(array $parts)
     {
         $this->parts = $parts;
         $this->data[] = array();
@@ -27,12 +37,18 @@ abstract class TableNode extends Node
     /**
      * Gets the rows count of the table
      */
-    public function getRows()
+    public function getRows(): int
     {
         return count($this->data)-1;
     }
 
-    public function push($parts, $line)
+    /**
+     * @param array|bool $parts
+     * @param string $line
+     *
+     * @return bool
+     */
+    public function push($parts, ?string $line): bool
     {
         $line = utf8_decode($line);
 
@@ -75,7 +91,7 @@ abstract class TableNode extends Node
         return true;
     }
 
-    public function finalize(Parser $parser)
+    public function finalize(Parser $parser): void
     {
         foreach ($this->data as &$row) {
             if ($row) {

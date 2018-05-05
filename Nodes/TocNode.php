@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST\Nodes;
 
 use Gregwar\RST\Environment;
 
 abstract class TocNode extends Node
 {
+    /** @var array */
     protected $files;
+    /** @var Environment */
     protected $environment;
+    /** @var array */
     protected $options;
 
     public function __construct(array $files, Environment $environment, array $options)
@@ -17,7 +22,10 @@ abstract class TocNode extends Node
         $this->options = $options;
     }
 
-    public function getFiles()
+    /**
+     * @return array
+     */
+    public function getFiles(): array
     {
         return $this->files;
     }
