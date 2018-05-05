@@ -30,10 +30,10 @@ class Doc extends Reference
             $entry = $metas->get($file);
             $entry['url'] = $environment->relativeUrl('/'.$entry['url']);
         } else {
-            $entry = array(
+            $entry = [
                 'title' => '(unresolved)',
                 'url' => '#'
-            );
+            ];
         }
 
         return $entry;

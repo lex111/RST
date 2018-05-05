@@ -23,7 +23,7 @@ class Kernel extends Base
     {
         $directives = parent::getDirectives();
 
-        $directives = array_merge($directives, array(
+        $directives = array_merge($directives, [
             new Directives\Image,
             new Directives\Figure,
             new Directives\Meta,
@@ -32,7 +32,7 @@ class Kernel extends Base
             new Directives\Url,
             new Directives\Div,
             new Directives\Wrap('note')
-        ));
+        ]);
 
         return $directives;
     }

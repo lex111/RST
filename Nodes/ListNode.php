@@ -7,7 +7,7 @@ namespace Gregwar\RST\Nodes;
 abstract class ListNode extends Node
 {
     /** @var array */
-    protected $lines = array();
+    protected $lines = [];
 
     /**
      * Infos contains:
@@ -28,7 +28,7 @@ abstract class ListNode extends Node
     {
         $depth = -1;
         $value = '';
-        $stack = array();
+        $stack = [];
 
         foreach ($this->lines as $line) {
             $prefix = $line['prefix'];
@@ -39,7 +39,7 @@ abstract class ListNode extends Node
             if ($depth < $newDepth) {
                 $tags = $this->createList($ordered);
                 $value .= $tags[0];
-                $stack[] = array($newDepth, $tags[1]."\n");
+                $stack[] = [$newDepth, $tags[1]."\n"];
                 $depth = $newDepth;
             }
 

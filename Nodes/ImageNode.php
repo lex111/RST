@@ -17,7 +17,7 @@ abstract class ImageNode extends Node
      * @param string $url
      * @param array $options
      */
-    public function __construct(string $url, array $options = array())
+    public function __construct(string $url, array $options = [])
     {
         $this->url = $url;
         $this->options = $options;

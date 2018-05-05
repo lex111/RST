@@ -11,9 +11,9 @@ abstract class TableNode extends Node
     /** @var array */
     protected $parts;
     /** @var array */
-    protected $data = array();
+    protected $data = [];
     /** @var array */
-    protected $headers = array();
+    protected $headers = [];
 
     /**
      * TableNode constructor.
@@ -23,7 +23,7 @@ abstract class TableNode extends Node
     public function __construct(array $parts)
     {
         $this->parts = $parts;
-        $this->data[] = array();
+        $this->data[] = [];
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class TableNode extends Node
             if ($parts[0]) {
                 $this->headers[count($this->data)-1] = true;
             }
-            $this->data[] = array();
+            $this->data[] = [];
         } else {
             // Pushing data in the cells
             list($header, $pretty, $parts) = $this->parts;

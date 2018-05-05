@@ -53,7 +53,7 @@ abstract class Kernel
      */
     public function getDirectives(): array
     {
-        return array(
+        return [
             new Directives\Dummy,
             new Directives\CodeBlock,
             new Directives\Raw,
@@ -61,7 +61,7 @@ abstract class Kernel
             new Directives\Toctree,
             new Directives\Document,
             new Directives\RedirectionTitle,
-        );
+        ];
     }
 
     /**
@@ -69,10 +69,10 @@ abstract class Kernel
      */
     public function getReferences(): array
     {
-        return array(
+        return [
             new References\Doc,
             new References\Doc('ref'),
-        );
+        ];
     }
 
     /**

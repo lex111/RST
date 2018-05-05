@@ -17,7 +17,7 @@ class TocNode extends Base
      * @return string
      * @throws \Exception
      */
-    protected function renderLevel(string $url, array $titles, int $level = 1, array $path = array()): ?string
+    protected function renderLevel(string $url, array $titles, int $level = 1, array $path = []): ?string
     {
         if ($level > $this->depth) {
             return null;

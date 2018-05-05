@@ -4,8 +4,8 @@ namespace Gregwar\RST;
 
 class Metas
 {
-    protected $entries = array();
-    protected $parents = array();
+    protected $entries = [];
+    protected $parents = [];
 
     public function __construct($entries)
     {
@@ -34,7 +34,7 @@ class Metas
             }
         }
 
-        $this->entries[$file] = array(
+        $this->entries[$file] = [
             'file' => $file,
             'url' => $url,
             'title' => $title,
@@ -42,7 +42,7 @@ class Metas
             'tocs' => $tocs,
             'ctime' => $ctime,
             'depends' => $depends
-        );
+        ];
 
         if (isset($this->parents[$file])) {
             $this->entries[$file]['parent'] = $this->parents[$file];

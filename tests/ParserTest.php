@@ -160,17 +160,17 @@ class ParserTest extends TestCase
         $document = $this->parse('titles.rst');
 
         $this->assertEquals($document->getTitle(), 'The main title');
-        $this->assertEquals($document->getTitles(), array(
-            array('The main title', array(
-                array('First level title', array(
-                    array('Second level title', array()),
-                    array('Other second level title', array())
-                )),
-                array('Other first level title', array(
-                    array('Next second level title', array()),
-                    array('Yet another second level title', array())
-                ))
-            )))
+        $this->assertEquals($document->getTitles(), [
+            ['The main title', [
+                ['First level title', [
+                    ['Second level title', []],
+                    ['Other second level title', []]
+                ]],
+                ['Other first level title', [
+                    ['Next second level title', []],
+                    ['Yet another second level title', []]
+                ]]
+            ]]]
         );
     }
 

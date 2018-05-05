@@ -9,7 +9,7 @@ use Gregwar\RST\Nodes\Node;
 class Environment
 {
     /** @var array Letters used as separators for titles and horizontal line */
-    public static $letters = array('=', '-', '~', '*', '^', '"');
+    public static $letters = ['=', '-', '~', '*', '^', '"'];
 
     /** @var ErrorManager|null */
     public $errorManager = null;
@@ -28,7 +28,7 @@ class Environment
     /** @var int */
     protected $currentTitleLevel = 0;
     /** @var array */
-    protected $titleLetters = array();
+    protected $titleLetters = [];
 
     // Current file name
     /** @var string */
@@ -41,30 +41,30 @@ class Environment
     protected $url = null;
 
     /** @var array References that can be resolved */
-    protected $references = array();
+    protected $references = [];
 
     /** @var Metas|null */
     protected $metas = null;
 
     /** @var array Dependencies of this document */
-    protected $dependencies = array();
+    protected $dependencies = [];
 
     /** @var array Variables of the document */
-    protected $variables = array();
+    protected $variables = [];
 
     /** @var array Links */
-    protected $links = array();
+    protected $links = [];
 
     /** @var array Level counters */
-    protected $levels = array();
+    protected $levels = [];
     /** @var array */
-    protected $counters = array();
+    protected $counters = [];
 
     /** @var bool Enable relative URLs */
     protected $relativeUrls = true;
 
     /** @var array Anonymous links stack */
-    protected $anonymous = array();
+    protected $anonymous = [];
 
     /**
      * Environment constructor.
@@ -81,10 +81,10 @@ class Environment
      */
     public function reset(): void
     {
-        $this->titleLetters = array();
+        $this->titleLetters = [];
         $this->currentTitleLevel = 0;
-        $this->levels = array();
-        $this->counters = array();
+        $this->levels = [];
+        $this->counters = [];
 
         for ($level = 0; $level < 16; $level++) {
             $this->levels[$level] = 1;
@@ -141,13 +141,13 @@ class Environment
         if ($parent) {
             foreach ($parent['tocs'] as $toc) {
                 if (in_array($this->currentFileName, $toc)) {
-                    $before = array();
+                    $before = [];
                     $after = $toc;
 
                     while ($after) {
                         $file = array_shift($after);
                         if ($file == $this->currentFileName) {
-                            return array($before, $after);
+                            return [$before, $after];
                         }
                         $before[] = $file;
                     }
@@ -238,7 +238,7 @@ class Environment
 
         $this->levels[$level] = 1;
         $this->counters[$level]++;
-        $token = array('title');
+        $token = ['title'];
 
         for ($i = 1; $i <= $level; $i++) {
             $token[] = $this->counters[$i];
@@ -298,7 +298,7 @@ class Environment
      */
     public function resetAnonymousStack(): void
     {
-        $this->anonymous = array();
+        $this->anonymous = [];
     }
 
     /**
@@ -471,7 +471,7 @@ class Environment
     protected function canonicalize(string $url): string
     {
         $parts = explode('/', $url);
-        $stack = array();
+        $stack = [];
 
         foreach ($parts as $part) {
             if ($part == '..') {

@@ -14,9 +14,9 @@ abstract class Document extends Node
     /** @var Environment */
     protected $environment;
     /** @var array */
-    protected $headerNodes = array();
+    protected $headerNodes = [];
     /** @var Node[] */
-    protected $nodes = array();
+    protected $nodes = [];
 
     /**
      * Document constructor.
@@ -54,7 +54,7 @@ abstract class Document extends Node
      */
     public function getNodes(callable $function = null): array
     {
-        $nodes = array();
+        $nodes = [];
 
         if ($function == null) {
             return $this->nodes;
@@ -88,7 +88,7 @@ abstract class Document extends Node
      */
     public function getTocs(): array
     {
-        $tocs = array();
+        $tocs = [];
 
         $nodes = $this->getNodes(function($node) {
             return $node instanceof TocNode;
@@ -121,19 +121,19 @@ abstract class Document extends Node
      */
     public function getTitles(): array
     {
-        $titles = array();
-        $levels = array(&$titles);
+        $titles = [];
+        $levels = [&$titles];
 
         foreach ($this->nodes as $node) {
             if ($node instanceof TitleNode) {
                 $level = $node->getLevel();
                 $text = (string)$node->getValue();
                 $redirection = $node->getTarget();
-                $value = $redirection ? array($text, $redirection) : $text;
+                $value = $redirection ? [$text, $redirection] : $text;
 
                 if (isset($levels[$level-1])) {
                     $parent = &$levels[$level-1];
-                    $element = array($value, array());
+                    $element = [$value, []];
                     $parent[] = $element;
                     $levels[$level] = &$parent[count($parent)-1][1];
                 }

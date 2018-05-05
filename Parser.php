@@ -33,7 +33,7 @@ class Parser
     protected $directive = false;
 
     // Current directives
-    protected $directives = array();
+    protected $directives = [];
 
     // Environment
     protected $environment = null;
@@ -196,7 +196,7 @@ class Parser
     protected function init()
     {
         $this->specialLetter = false;
-        $this->buffer = array();
+        $this->buffer = [];
     }
 
     /**
@@ -251,7 +251,7 @@ class Parser
             }
         }
 
-        return array($lineChar, $spaceChar);
+        return [$lineChar, $spaceChar];
     }
 
     /**
@@ -286,18 +286,18 @@ class Parser
 
         if ($chars[0] == Environment::$prettyTableJoint && $chars[1] == Environment::$prettyTableLetter) {
             $pretty = true;
-            $chars = array(Environment::$prettyTableLetter, Environment::$prettyTableJoint);
+            $chars = [Environment::$prettyTableLetter, Environment::$prettyTableJoint];
         } else if ($chars[0] == Environment::$prettyTableJoint && $chars[1] == Environment::$prettyTableHeader) {
             $pretty = true;
             $header = true;
-            $chars = array(Environment::$prettyTableHeader, Environment::$prettyTableJoint);
+            $chars = [Environment::$prettyTableHeader, Environment::$prettyTableJoint];
         } else {
             if (!($chars[0] == Environment::$tableLetter && $chars[1] == ' ')) {
                 return false;
             }
         }
 
-        $parts = array();
+        $parts = [];
         $separator = false;
         // Crawl the line to match those chars
         for ($i=0; $i<strlen($line); $i++) {
@@ -316,11 +316,11 @@ class Parser
         }
 
         if (count($parts) > 1) {
-            return array(
+            return [
                 $header,
                 $pretty,
                 $parts
-            );
+            ];
         }
 
         return false;
@@ -351,12 +351,12 @@ class Parser
         }
 
         if (preg_match('/^((\*|\-)|([\d#]+)\.) (.+)$/', trim($line), $match)) {
-            return array(
+            return [
                 'prefix' => $line[$i],
                 'ordered' => ($line[$i] == '*' || $line[$i] == '-') ? false : true,
                 'depth' => $depth,
-                'text' => array($match[4])
-            );
+                'text' => [$match[4]]
+            ];
         }
 
         return false;
@@ -465,12 +465,12 @@ class Parser
     protected function initDirective($line)
     {
         if (preg_match('/^\.\. (\|(.+)\| |)([^\s]+)::( (.*)|)$/mUsi', $line, $match)) {
-            $this->directive = array(
+            $this->directive = [
                 'variable' => $match[2],
                 'name' => $match[3],
                 'data' => trim($match[4]),
-                'options' => array()
-            );
+                'options' => []
+            ];
 
             return true;
         }
@@ -640,7 +640,7 @@ class Parser
                     return false;
                 } else if ($this->isDirective($line)) {
                     $this->state = self::STATE_DIRECTIVE;
-                    $this->buffer = array();
+                    $this->buffer = [];
                     $this->flush();
                     $this->initDirective($line);
                 } else if ($this->parseLink($line)) {
@@ -688,7 +688,7 @@ class Parser
                     $lastLine = array_pop($this->buffer);
 
                     if ($lastLine) {
-                        $this->buffer = array($lastLine);
+                        $this->buffer = [$lastLine];
                         $this->state = self::STATE_TITLE;
                     } else {
                         $this->buffer[] = $line;

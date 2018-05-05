@@ -27,7 +27,7 @@ class Toctree extends Directive
     {
         $environment = $parser->getEnvironment();
         $kernel = $parser->getKernel();
-        $files = array();
+        $files = [];
 
         foreach (explode("\n", $node->getValue()) as $file) {
             $file = trim($file);

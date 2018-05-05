@@ -21,8 +21,8 @@ class Builder
     protected $verbose = true;
 
     // Files to copy at the end of the build
-    protected $toCopy = array();
-    protected $toMkdir = array();
+    protected $toCopy = [];
+    protected $toMkdir = [];
 
     // Source and target directory
     protected $directory;
@@ -32,22 +32,22 @@ class Builder
     protected $metas;
 
     // States (decision) of the scanned documents
-    protected $states = array();
+    protected $states = [];
 
     // Queue of documents to be parsed
-    protected $parseQueue = array();
+    protected $parseQueue = [];
 
     // Parsed documents waiting to be rendered
-    protected $documents = array();
+    protected $documents = [];
 
     // Kernel
     protected $kernel;
 
     // Hooks before the parsing on the environment
-    protected $beforeHooks = array();
+    protected $beforeHooks = [];
 
     // Hooks after the parsing
-    protected $hooks = array();
+    protected $hooks = [];
 
     // Use relative URLs
     protected $relativeUrls = true;
@@ -394,7 +394,7 @@ class Builder
             $destination = basename($source);
         }
 
-        $this->toCopy[] = array($source, $destination);
+        $this->toCopy[] = [$source, $destination];
 
         return $this;
     }

@@ -18,6 +18,6 @@ class Dummy extends Directive
 
     public function processNode(Parser $parser, string $variable, string $data, array $options): Node
     {
-        return new DummyNode(array('data' => $data, 'options' => $options));
+        return new DummyNode(['data' => $data, 'options' => $options]);
     }
 }

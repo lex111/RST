@@ -37,13 +37,13 @@ abstract class Span extends Node
         };
 
         // Replacing literal with tokens
-        $tokens = array();
+        $tokens = [];
         $span = preg_replace_callback('/``(.+)``(?!`)/mUsi', function($match) use (&$tokens, $generator) {
             $id = $generator();
-            $tokens[$id] = array(
+            $tokens[$id] = [
                 'type' => 'literal',
                 'text' => htmlspecialchars($match[1])
-            );
+            ];
 
             return $id;
         }, $span);
@@ -85,13 +85,13 @@ abstract class Span extends Node
                 $anchor = $match[2];
             }
 
-            $tokens[$id] = array(
+            $tokens[$id] = [
                 'type' => 'reference',
                 'section' => $section,
                 'url' => $url,
                 'text' => $text,
                 'anchor' => $anchor
-            );
+            ];
 
             $environment->found($section, $url);
 
@@ -111,11 +111,11 @@ abstract class Span extends Node
                 $url = $match[2];
             }
 
-            $tokens[$id] = array(
+            $tokens[$id] = [
                 'type' => 'link',
                 'link' => $link,
                 'url' => $url
-            );
+            ];
 
             return $id.$next;
         };
