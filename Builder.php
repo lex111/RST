@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 /**
@@ -11,69 +13,78 @@ class Builder
     const NO_PARSE = 1;
     const PARSE = 2;
 
-    // Tree index name
+    /** @var string Tree index name */
     protected $indexName = 'index';
 
-    // Error manager
+    /** @var ErrorManager|null Error manager */
     protected $errorManager = null;
 
-    // Verbose build ?
+    /** @var bool Verbose build ? */
     protected $verbose = true;
 
-    // Files to copy at the end of the build
+    /** @var array Files to copy at the end of the build */
     protected $toCopy = [];
+    /** @var array */
     protected $toMkdir = [];
 
-    // Source and target directory
+    /** @var string */
     protected $directory;
+    /** @var string */
     protected $targetDirectory;
 
-    // Metas for documents
+    /** @var Metas */
     protected $metas;
 
-    // States (decision) of the scanned documents
+    /** @var array States (decision) of the scanned documents */
     protected $states = [];
 
-    // Queue of documents to be parsed
+    /** @var array Queue of documents to be parsed */
     protected $parseQueue = [];
 
-    // Parsed documents waiting to be rendered
+    /** @var array Parsed documents waiting to be rendered */
     protected $documents = [];
 
-    // Kernel
+    /** @var Kernel */
     protected $kernel;
 
-    // Hooks before the parsing on the environment
+    /** @var array Hooks before the parsing on the environment */
     protected $beforeHooks = [];
 
-    // Hooks after the parsing
+    /** @var array Hooks after the parsing */
     protected $hooks = [];
 
-    // Use relative URLs
+    /** @var bool Use relative URLs */
     protected $relativeUrls = true;
 
+    /**
+     * Builder constructor.
+     *
+     * @param Kernel|null $kernel
+     */
     public function __construct($kernel = null)
     {
         $this->errorManager = new ErrorManager;
-
-        if ($kernel) {
-            $this->kernel = $kernel;
-        } else {
-            $this->kernel = new HTML\Kernel;
-        }
+        $this->kernel = $kernel ?: new HTML\Kernel;
 
         $this->kernel->initBuilder($this);
     }
 
-    public function getErrorManager()
+    /**
+     * @return ErrorManager
+     */
+    public function getErrorManager(): ErrorManager
     {
         return $this->errorManager;
     }
 
     /**
      * Adds an hook which will be called on each document after parsing
+     *
+     * @param callable $function
+     *
+     * @return Builder
      */
-    public function addHook($function)
+    public function addHook(callable $function): self
     {
         $this->hooks[] = $function;
 
@@ -82,22 +93,36 @@ class Builder
 
     /**
      * Adds an hook which will be called on each environment during building
+     *
+     * @param callable $function
+     *
+     * @return Builder
      */
-    public function addBeforeHook($function)
+    public function addBeforeHook(callable $function): self
     {
         $this->beforeHooks[] = $function;
 
         return $this;
     }
 
-    protected function display($text)
+    /**
+     * @param string $text
+     */
+    protected function display(string $text): void
     {
         if ($this->verbose) {
             echo $text."\n";
         }
     }
 
-    public function build($directory, $targetDirectory = 'output', $verbose = true)
+    /**
+     * @param string $directory
+     * @param string $targetDirectory
+     * @param bool $verbose
+     *
+     * @throws \Exception
+     */
+    public function build(string $directory, string $targetDirectory = 'output', bool $verbose = true): void
     {
         $this->verbose = $verbose;
         $this->directory = $directory;
@@ -136,7 +161,7 @@ class Builder
     /**
      * Renders all the pending documents
      */
-    protected function render()
+    protected function render(): void
     {
         $this->display('* Rendering documents');
         foreach ($this->documents as $file => &$document) {
@@ -154,8 +179,10 @@ class Builder
 
     /**
      * Adding a file to the parse queue
+     *
+     * @param string $file
      */
-    protected function addToParseQueue($file)
+    protected function addToParseQueue(string $file)
     {
         $this->states[$file] = self::PARSE;
 
@@ -167,7 +194,7 @@ class Builder
     /**
      * Returns the next file to parse
      */
-    protected function getFileToParse()
+    protected function getFileToParse(): ?string
     {
         if ($this->parseQueue) {
             return array_shift($this->parseQueue);
@@ -178,8 +205,10 @@ class Builder
 
     /**
      * Parses all the document that need to be parsed
+     *
+     * @throws \Exception
      */
-    protected function parseAll()
+    protected function parseAll(): void
     {
         $this->display('* Parsing files');
         while ($file = $this->getFileToParse()) {
@@ -241,8 +270,10 @@ class Builder
     /**
      * Scans a file, this will check the status of the file and tell if it
      * needs to be parsed or not
+     *
+     * @param string $file
      */
-    public function scan($file)
+    public function scan(string $file)
     {
         // If no decision is already made about this file
         if (!isset($this->states[$file])) {
@@ -279,7 +310,7 @@ class Builder
     /**
      * Scans all the metas
      */
-    public function scanMetas()
+    public function scanMetas(): void
     {
         $entries = $this->metas->getAll();
 
@@ -291,7 +322,7 @@ class Builder
     /**
      * Get the meta file name
      */
-    protected function getMetaFile()
+    protected function getMetaFile(): string
     {
         return $this->getTargetFile('meta.php');
     }
@@ -300,7 +331,7 @@ class Builder
     /**
      * Try to inport the metas from the meta files
      */
-    protected function loadMetas()
+    protected function loadMetas(): ?array
     {
         $metaFile = $this->getMetaFile();
 
@@ -314,7 +345,7 @@ class Builder
     /**
      * Saving the meta files
      */
-    protected function saveMetas()
+    protected function saveMetas(): void
     {
         $metas = '<?php return '.var_export($this->metas->getAll(), true).';';
         file_put_contents($this->getMetaFile(), $metas);
@@ -322,8 +353,12 @@ class Builder
 
     /**
      * Gets the .rst of a source file
+     *
+     * @param string $file
+     *
+     * @return string
      */
-    public function getRST($file)
+    public function getRST(string $file): string
     {
         return $this->getSourceFile($file . '.rst');
     }
@@ -331,8 +366,12 @@ class Builder
     /**
      * Gets the name of a target for a file, for instance /introduction/part1 could
      * be resolved into /path/to/introduction/part1.html
+     *
+     * @param string $file
+     *
+     * @return string
      */
-    public function getTargetOf($file)
+    public function getTargetOf(string $file): string
     {
         $meta = $this->metas->get($file);
 
@@ -341,8 +380,12 @@ class Builder
 
     /**
      * Gets the URL of a target file
+     *
+     * @param Document $document
+     *
+     * @return string
      */
-    public function getUrl($document)
+    public function getUrl(Document $document): string
     {
         $environment = $document->getEnvironment();
 
@@ -351,16 +394,24 @@ class Builder
 
     /**
      * Gets the name of a target file
+     *
+     * @param string $filename
+     *
+     * @return string
      */
-    public function getTargetFile($filename)
+    public function getTargetFile(string $filename): string
     {
         return $this->targetDirectory . '/' . $filename;
     }
 
     /**
      * Gets the name of a source file
+     *
+     * @param string $filename
+     *
+     * @return string
      */
-    public function getSourceFile($filename)
+    public function getSourceFile(string $filename): string
     {
         return $this->directory . '/' . $filename;
     }
@@ -368,7 +419,7 @@ class Builder
     /**
      * Run the copy
      */
-    public function doCopy()
+    public function doCopy(): void
     {
         foreach ($this->toCopy as $copy) {
             list($source, $destination) = $copy;
@@ -387,8 +438,13 @@ class Builder
 
     /**
      * Add a file to copy
+     *
+     * @param string $source
+     * @param string|null $destination
+     *
+     * @return Builder
      */
-    public function copy($source, $destination = null)
+    public function copy(string $source, ?string $destination = null)
     {
         if ($destination === null) {
             $destination = basename($source);
@@ -402,7 +458,7 @@ class Builder
     /**
      * Run the directories creation
      */
-    public function doMkdir()
+    public function doMkdir(): void
     {
         foreach ($this->toMkdir as $mkdir) {
             $dir = $this->getTargetFile($mkdir);
@@ -416,31 +472,43 @@ class Builder
     /**
      * Creates a directory in the target
      *
-     * @param $directory the directory name to create
+     * @param string $directory the directory name to create
+     *
+     * @return Builder
      */
-    public function mkdir($directory)
+    public function mkdir(string $directory): self
     {
         $this->toMkdir[] = $directory;
 
         return $this;
     }
 
-    public function setIndexName($name)
+    /**
+     * @param string $name
+     *
+     * @return Builder
+     */
+    public function setIndexName(string $name): self
     {
         $this->indexName = $name;
 
         return $this;
     }
 
-    public function getIndexName()
+    /**
+     * @return string
+     */
+    public function getIndexName(): string
     {
         return $this->indexName;
     }
 
     /**
      * Use relative URLs for links
+     *
+     * @param bool $enable
      */
-    public function setUseRelativeUrls($enable)
+    public function setUseRelativeUrls(bool $enable): void
     {
         $this->relativeUrls = $enable;
     }

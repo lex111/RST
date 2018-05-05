@@ -35,7 +35,7 @@ abstract class Kernel
      * @param mixed|null $arg3
      * @param mixed|null $arg4
      *
-     * @return null
+     * @return object|null
      */
     public function build(string $name, $arg1 = null, $arg2 = null, $arg3 = null, $arg4 = null): ?object
     {

@@ -1,65 +1,83 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gregwar\RST;
 
 use Gregwar\RST\HTML\Document;
+use Gregwar\RST\HTML\Kernel as HtmlKernel;
+use Gregwar\RST\Nodes\Node;
 
 class Parser
 {
-    const STATE_BEGIN = 0;
-    const STATE_NORMAL = 1;
-    const STATE_DIRECTIVE = 2;
-    const STATE_BLOCK = 3;
-    const STATE_TITLE = 4;
-    const STATE_LIST = 5;
-    const STATE_SEPARATOR = 6;
-    const STATE_CODE = 7;
-    const STATE_TABLE = 8;
-    const STATE_COMMENT = 9;
+    private const STATE_BEGIN = 0;
+    private const STATE_NORMAL = 1;
+    private const STATE_DIRECTIVE = 2;
+    private const STATE_BLOCK = 3;
+    private const STATE_TITLE = 4;
+    private const STATE_LIST = 5;
+    private const STATE_SEPARATOR = 6;
+    private const STATE_CODE = 7;
+    private const STATE_TABLE = 8;
+    private const STATE_COMMENT = 9;
 
-    // Current state
+    /** @var Kernel */
+    protected $kernel;
+
+    /** @var int Current state */
     protected $state;
 
-    // Current document
+    /** @var Document Current document */
     protected $document;
 
-    // The buffer is an array containing current lines that are parsed
+    /** @var array The buffer is an array containing current lines that are parsed */
     protected $buffer;
 
-    // Current level of special lines (==== and so)
+    /** @var bool|string Current level of special lines (==== and so) */
     protected $specialLetter;
 
-    // Current directive to be applied on next node
+    /** @var array|bool|null Current directive to be applied on next node */
     protected $directive = false;
 
-    // Current directives
+    /** @var array Current directives */
     protected $directives = [];
 
-    // Environment
+    /** @var Environment|null */
     protected $environment = null;
 
-    // Allow include directives?
+    /** @var bool Allow include directives? */
     protected $includeAllowed = true;
 
-    // Behaves like PHP's open_basedir
+    /** @var string Behaves like PHP's open_basedir */
     protected $includeRoot = '';
 
-    // Is the current node code ?
+    /** @var bool Is the current node code? */
     protected $isCode = false;
 
-    // Current line
+    /** @var int Current line */
     protected $currentLine = 0;
 
-    // File name
+    /** @var string|null File name */
     protected $filename = null;
 
-    public function __construct($environment = null, $kernel = null)
+    /** @var array */
+    protected $lineInfo;
+
+    /** @var array */
+    protected $listLine;
+
+    /** @var bool */
+    protected $listFlow;
+
+    /**
+     * Parser constructor.
+     *
+     * @param Environment|null $environment
+     * @param Kernel|null $kernel
+     */
+    public function __construct(?Environment $environment = null, ?Kernel $kernel = null)
     {
-        if ($kernel == null) {
-            $kernel = new \Gregwar\RST\HTML\Kernel;
-        }
-        $this->kernel = $kernel;
-        
+        $this->kernel = $kernel ?: new HtmlKernel;
         $this->environment = $environment ?: $this->kernel->build('Environment');
 
         $this->initDirectives();
@@ -71,7 +89,7 @@ class Parser
      *
      * @return Parser a new parser with the same environment
      */
-    public function getSubParser()
+    public function getSubParser(): Parser
     {
         return new Parser($this->environment, $this->kernel);
     }
@@ -80,9 +98,10 @@ class Parser
      * Try to parse a link definition
      * 
      * @param string $line
+     *
      * @return bool
      */
-    public function parseLink($line)
+    public function parseLink($line): bool
     {
         // Links
         if (preg_match('/^\.\. _`(.+)`: (.+)$/mUsi', $line, $match)) {
@@ -116,7 +135,7 @@ class Parser
     /**
      * Initializing built-in directives
      */
-    public function initDirectives()
+    public function initDirectives(): void
     {
         $directives = $this->kernel->getDirectives();
 
@@ -128,7 +147,7 @@ class Parser
     /**
      * Initializing references
      */
-    public function initReferences()
+    public function initReferences(): void
     {
         $references = $this->kernel->getReferences();
 
@@ -142,7 +161,7 @@ class Parser
      *
      * @return Environment the parser environment
      */
-    public function getEnvironment()
+    public function getEnvironment(): Environment
     {
         return $this->environment;
     }
@@ -152,7 +171,7 @@ class Parser
      *
      * @return Kernel the kernel
      */
-    public function getKernel()
+    public function getKernel(): Kernel
     {
         return $this->kernel;
     }
@@ -162,16 +181,17 @@ class Parser
      *
      * @param Directive $directive a directive handler
      */
-    public function registerDirective(Directive $directive)
+    public function registerDirective(Directive $directive): void
     {
         $this->directives[$directive->getName()] = $directive;
     }
 
     /**
      * Tells if the current buffer is announcing a block of code
+     *
      * @return bool
      */
-    protected function prepareCode()
+    protected function prepareCode(): bool
     {
         if (!$this->buffer) {
             return false;
@@ -193,7 +213,7 @@ class Parser
         return false;
     }
 
-    protected function init()
+    protected function init(): void
     {
         $this->specialLetter = false;
         $this->buffer = [];
@@ -204,9 +224,10 @@ class Parser
      * returns the depth of the special line
      * 
      * @param string $line
-     * @return bool
+     *
+     * @return bool|string
      */
-    protected function isSpecialLine($line)
+    protected function isSpecialLine(string $line)
     {
         if (strlen($line) < 3) {
             return false;
@@ -219,7 +240,7 @@ class Parser
             return false;
         }
 
-        for ($i=1; $i<strlen($line); $i++) {
+        for ($i = 1; $i < strlen($line); $i++) {
             if ($line[$i] != $letter) {
                 return false;
             }
@@ -239,7 +260,7 @@ class Parser
         $lineChar = $line[0];
         $spaceChar = null;
 
-        for ($i=0; $i<strlen($line); $i++) {
+        for ($i = 0; $i < strlen($line); $i++) {
             if ($line[$i] != $lineChar) {
                 if ($spaceChar == null) {
                     $spaceChar = $line[$i];
@@ -265,9 +286,10 @@ class Parser
      *  1                     23        33
      * 
      * @param string $line
-     * @return mixed
+     *
+     * @return bool|array
      */
-    protected function parseTableLine($line)
+    protected function parseTableLine(string $line)
     {
         $header = false;
         $pretty = false;
@@ -300,7 +322,7 @@ class Parser
         $parts = [];
         $separator = false;
         // Crawl the line to match those chars
-        for ($i=0; $i<strlen($line); $i++) {
+        for ($i = 0; $i < strlen($line); $i++) {
             if ($line[$i] == $chars[0]) {
                 if (!$separator) {
                     $parts[] = $i;
@@ -330,15 +352,18 @@ class Parser
      * Parses a list line
      *
      * @param string $line the string line
-     * @return array containing:
-     *         - true if the list is ordered, false else
-     *         - the depth of the list
-     *         - the text of the first line without the tick
+     *
+     * @return array|bool
+     *
+     * array containing:
+     *     - true if the list is ordered, false else
+     *     - the depth of the list
+     *     - the text of the first line without the tick
      */
-    protected function parseListLine($line)
+    protected function parseListLine(string $line)
     {
         $depth = 0;
-        for ($i=0; $i<strlen($line); $i++) {
+        for ($i = 0; $i < strlen($line); $i++) {
             $char = $line[$i];
 
             if ($char == ' ') {
@@ -366,9 +391,10 @@ class Parser
      * Is the given line a list line ?
      *
      * @param string $line
+     *
      * @return bool true if the given line is a list line
      */
-    protected function isListLine($line)
+    protected function isListLine(string $line): bool
     {
         // A buffer is a list if at least the first line is a list-style
         $listLine = $this->parseListLine($line);
@@ -380,20 +406,17 @@ class Parser
         return false;
     }
 
-    protected $lineInfo;
-    protected $listLine;
-    protected $listFlow;
-
     /**
      * Push a line to the current list node buffer
      * 
-     * @param string $line
+     * @param string|null $line
      * @param bool $flush
+     *
      * @return bool
      */
-    public function pushListLine($line, $flush = false)
+    public function pushListLine(?string $line = null, bool $flush = false): bool
     {
-        if (trim($line)) {
+        if (trim((string) $line)) {
             $infos = $this->parseListLine($line);
 
             if ($infos) {
@@ -437,9 +460,10 @@ class Parser
      *     This is still part of the block, even if there is an empty line
      *
      * @param string $line the line text
+     *
      * @return bool true if the line is still in a block
      */
-    protected function isBlockLine($line)
+    protected function isBlockLine(string $line): bool
     {
         if (strlen($line)) {
             return !trim($line[0]);
@@ -456,13 +480,14 @@ class Parser
      *     :otherOption: otherValue
      *
      * @param string $line
-     * @return false if this is not a directive, else an array containing :
+     *
+     * @return bool false if this is not a directive, else an array containing :
      *         - variable: the variable name of the directive
      *         - name: the directive name
      *         - data: the data of the directive
      *         - options: an array of all the options and their values
      */
-    protected function initDirective($line)
+    protected function initDirective(string $line): bool
     {
         if (preg_match('/^\.\. (\|(.+)\| |)([^\s]+)::( (.*)|)$/mUsi', $line, $match)) {
             $this->directive = [
@@ -482,31 +507,35 @@ class Parser
      * Is this line a comment ?
      *
      * @param string $line the line
+     *
      * @return bool true if it's a comment
      */
-    protected function isComment($line)
+    protected function isComment(string $line): bool
     {
-        return preg_match('/^\.\. (.*)$/mUsi', $line);
+        return (bool) preg_match('/^\.\. (.*)$/mUsi', $line);
     }
 
     /**
      * Is this line a directive ?
      *
      * @param string $line the line
+     *
      * @return bool true if it's a directive
      */
-    protected function isDirective($line)
+    protected function isDirective(string $line): bool
     {
-        return preg_match('/^\.\. (\|(.+)\| |)([^\s]+)::(.*)$/mUsi', $line);
+        return (bool) preg_match('/^\.\. (\|(.+)\| |)([^\s]+)::(.*)$/mUsi', $line);
     }
 
     /**
      * Try to add an option line to the current directive, returns true if sucess
      * and false if failure
-     * 
+     *
      * @param string $line
+     *
+     * @return bool
      */
-    protected function directiveAddOption($line)
+    protected function directiveAddOption(string $line): bool
     {
         if (preg_match('/^(\s+):(.+): (.*)$/mUsi', $line, $match)) {
             $this->directive['options'][$match[2]] = trim($match[3]);
@@ -522,10 +551,12 @@ class Parser
 
     /**
      * Gets the current directive
-     * 
-     * @return Directive
+     *
+     * @return Directive|null
+     *
+     * @throws \Exception
      */
-    protected function getCurrentDirective()
+    protected function getCurrentDirective(): ?Directive
     {
         if (!$this->directive) {
             $this->getEnvironment()->getErrorManager()->error('Asking for current directive, but there is not');
@@ -544,9 +575,12 @@ class Parser
 
     /**
      * Flushes the current buffer to create a node
+     *
+     * @throws \Exception
      */
     protected function flush()
     {
+        /** @var Node $node */
         $node = null;
 
         $this->isCode = false;
@@ -570,7 +604,7 @@ class Parser
                 $node = $this->kernel->build('Nodes\QuoteNode', $this->buffer);
                 $data = $node->getValue();
                 $subParser = $this->getSubParser();
-                $document = $subParser->parseLocal($data);
+                $document = $subParser->parseLocal((string) $data);
                 $node->setValue($document);
                 break;
             case self::STATE_LIST:
@@ -619,6 +653,10 @@ class Parser
      * Process one line
      *
      * @param string $line the line string
+     *
+     * @return bool
+     *
+     * @throws \Exception
      */
     protected function parseLine(&$line)
     {
@@ -759,10 +797,11 @@ class Parser
     /**
      * Is this file allowed to be included?
      *
-     * @param $path
+     * @param string $path
+     *
      * @return bool
      */
-    public function includeFileAllowed($path)
+    public function includeFileAllowed(string $path)
     {
         if (!$this->includeAllowed) {
             return false;
@@ -785,8 +824,12 @@ class Parser
     /**
      * Include all files described in $document and returns the new string of the given
      * document with includes processed
+     *
+     * @param string $document
+     *
+     * @return string
      */
-    public function includeFiles($document)
+    public function includeFiles(string $document): string
     {
         $environment = $this->getEnvironment();
         $parser = $this;
@@ -794,7 +837,7 @@ class Parser
         return preg_replace_callback('/^\.\. include:: (.+)$/m', function($match) use ($parser, $environment) {
             $path = $environment->absoluteRelativePath($match[1]);
             if ($parser->includeFileAllowed($path)) {
-                return $parser->includeFiles(file_get_contents($path));
+                return $parser->includeFiles((string) file_get_contents($path));
             } else {
                 return '';
             }
@@ -805,8 +848,10 @@ class Parser
      * Process all the lines of a document string
      *
      * @param string $document the string (content) of the document
+     *
+     * @throws \Exception
      */
-    protected function parseLines($document)
+    protected function parseLines(string $document)
     {
         // Including files
         $document = str_replace("\r\n", "\n", $document);
@@ -834,9 +879,12 @@ class Parser
      * Parse a document and return a Document instance
      *
      * @param string $document The contents (string) of the document
+     *
      * @return Document The created document
+     *
+     * @throws \Exception
      */
-    public function parse($document)
+    public function parse(string $document): Document
     {
         $this->getEnvironment()->reset();
 
@@ -845,13 +893,16 @@ class Parser
 
     /**
      * @param string $document
+     *
      * @return Document The created document
+     *
+     * @throws \Exception
      */
-    public function parseLocal($document)
+    public function parseLocal(string $document): Document
     {
         $this->document = $this->kernel->build('Document', $this->environment);
         $this->init();
-        $this->parseLines(trim($document));
+        $this->parseLines(trim((string) $document));
 
         foreach ($this->directives as $name => $directive) {
             $directive->finalize($this->document);
@@ -864,7 +915,10 @@ class Parser
      * Parses a given file and return a Document instance
      *
      * @param string $file the file name to parse
+     *
      * @return Document $document the document instance
+     *
+     * @throws \Exception
      */
     public function parseFile($file)
     {
@@ -875,7 +929,7 @@ class Parser
     /**
      * Gets the current filename
      */
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->filename ?: '(unknown)';
     }
@@ -883,7 +937,7 @@ class Parser
     /**
      * Gets the current line
      */
-    public function getCurrentLine()
+    public function getCurrentLine(): int
     {
         return $this->currentLine;
     }
@@ -891,10 +945,11 @@ class Parser
     /**
      * Create a span, which is a text with inline style
      *
-     * @param string|array  $span the content string
-     * @return Span a span object
+     * @param string|array $span the content string
+     *
+     * @return Span|object a span object
      */
-    public function createSpan($span)
+    public function createSpan($span): Span
     {
         return $this->kernel->build('Span', $this, $span);
     }
@@ -902,7 +957,7 @@ class Parser
     /**
      * @return bool
      */
-    public function getIncludeAllowed()
+    public function getIncludeAllowed(): bool
     {
         return $this->includeAllowed;
     }
@@ -910,7 +965,7 @@ class Parser
     /**
      * @return string
      */
-    public function getIncludeRoot()
+    public function getIncludeRoot(): string
     {
         return $this->includeRoot;
     }
@@ -920,9 +975,10 @@ class Parser
      *
      * @param bool $allow
      * @param string $directory
+     *
      * @return self
      */
-    public function setIncludePolicy($allow, $directory = null)
+    public function setIncludePolicy(bool $allow, ?string $directory = null): self
     {
         $this->includeAllowed = !empty($allow);
         if ($directory !== null) {
